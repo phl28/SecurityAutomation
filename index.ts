@@ -29,7 +29,7 @@ async function main() {
     // ];
 
     // await csvWriter.writeRecords(records);
-    console.log('CSV file generated successfully!');
+    // console.log('CSV file generated successfully!');
   } catch (error) {
     console.error('An error occurred:', error);
   }

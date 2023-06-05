@@ -10,7 +10,6 @@ export async function fetchMeteorGalaxyServers() {
         user(username: $username) {
             accountLocked
             apps {
-                _id
                 hostname
                 status
                 createdAt
