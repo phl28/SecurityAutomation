@@ -2,6 +2,4 @@
  
 npm install -g typescript
 
-tsc index.ts
-
-node index.js
+npm start
