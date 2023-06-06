@@ -9,6 +9,7 @@ interface Database {
     storageLimit: number;
     accessUsers: User[];
     backupEnabled: boolean;
+    ipAccess: string[];
 }
 interface Group {
     clusterCount: number;
@@ -24,6 +25,7 @@ interface Group {
     roles: Role[];
     firstName: string;
     lastName: string;
+    ipAddress: string;
 }
 
 interface Role {
@@ -69,9 +71,21 @@ export async function fetchMongoDBDatabases(){
                 url: base_url + 'groups/' + project.id + '/users',
             })
 
+            const accessResponse = await digestAuth.request({
+                headers: { Accept: "application/json" },
+                method: "GET",
+                url: base_url + 'groups/' + project.id + '/accessList',
+            }) 
+
+            const accesses = accessResponse.data as Response;
             const users = userResponse.data as Response;
             const clusters = projectResponse.data as Response;
             const accessUsers: User[] = [];
+            const ipAccess: string[] = [];
+
+            for (const access of accesses.results) {
+                ipAccess.push(access.ipAddress);
+            }
             
             for (const user of users.results) {
                 const roles = user.roles as Role[];
@@ -92,6 +106,7 @@ export async function fetchMongoDBDatabases(){
                     storageLimit: cluster.replicationFactor * cluster.diskSizeGB,
                     accessUsers,
                     backupEnabled: cluster.backupEnabled,
+                    ipAccess,
                 }
                 databases.push(databaseDetails);
             }    
