@@ -4,8 +4,8 @@ import { config } from './config';
 interface Version {
     _id: string;
     version: string;
-    buildStatus: string;
-    deployStatus: string;
+    buildStatus: string | null;
+    deployStatus: string | null;
 }
 
 interface Activity {
@@ -90,8 +90,8 @@ export async function fetchMeteorGalaxyServers() {
                     versionDetails = {
                         _id: activity.versionId,
                         version: version.version,
-                        buildStatus: version.buildStatus,
-                        deployStatus: version.deployStatus
+                        buildStatus: activity.userName === '' ? version.buildStatus : null,
+                        deployStatus: activity.userName === '' ? version.deployStatus : null,
                     }
                 }
                 const activityDetails: Activity = {
