@@ -2,17 +2,15 @@ import axios from 'axios';
 import { config } from './config';
 
 interface Version {
-    _id: string;
     version: string;
-    buildStatus: string | null;
-    deployStatus: string | null;
+    status: string | null;
 }
 
 interface Activity {
     type: string;
+    username: string;
+    timestamp: string;
     version: Version | null;
-    userName: string;
-    createdAt: string;
 }
 
 interface App {
@@ -87,18 +85,25 @@ export async function fetchMeteorGalaxyServers() {
                 let versionDetails: Version | null = null;
                 if (activity.versionId) {
                     const version = app.versions.find((version: { _id: any; }) => version._id === activity.versionId);
+                    let status = null;
+                    if (activity.userName === '') {
+                        if (activity.type.includes('Build')) {
+                            status = version.buildStatus;
+                        }
+                        else if (activity.type.includes('Deploy')) {
+                            status = version.deployStatus;
+                        }
+                    }
                     versionDetails = {
-                        _id: activity.versionId,
                         version: version.version,
-                        buildStatus: activity.userName === '' ? version.buildStatus : null,
-                        deployStatus: activity.userName === '' ? version.deployStatus : null,
+                        status,
                     }
                 }
                 const activityDetails: Activity = {
                     type: activity.type,
+                    username: activity.userName,
                     version: versionDetails,
-                    userName: activity.userName,
-                    createdAt: activity.createdAt
+                    timestamp: activity.createdAt,
                 }
                 activities.push(activityDetails);
             }

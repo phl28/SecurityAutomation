@@ -3,11 +3,16 @@ import { config } from './config';
 
 interface Activity {
     type: string;
-    user: string;
+    username: string;
+    version: Version;
     timestamp: string;
-    originalEnvironment: string | undefined;
-    newEnvironment: string;
-    description: string | null;
+    environment: string | undefined;
+    // description: string | null;
+}
+
+interface Version {
+    version: string;
+    status: string | null;
 }
 
 interface Repo {
@@ -60,15 +65,29 @@ export async function fetchGithubData() {
                 if (deployment.creator) {
                     user = deployment.creator.login;
                 }
-                const activitiyDetails = {
-                    type: 'deployment',
-                    user,
-                    timestamp: deployment.created_at,
-                    originalEnvironment: deployment.original_environment,
-                    newEnvironment: deployment.environment,
-                    description: deployment.description
+                const statusResponse = await octokit.request('GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses', {
+                    owner: organization,
+                    repo: rep.name,
+                    deployment_id: deployment.id,
+                    headers: {
+                      'X-GitHub-Api-Version': '2022-11-28'
+                    }
+                  })
+                for (const status of statusResponse.data) {
+                    const versionDetails = {
+                        version: deployment.ref,
+                        status: status.state,
+                    }
+                    const activitiyDetails = {
+                        type: 'deployment',
+                        username: user,
+                        version: versionDetails,
+                        timestamp: status.created_at,
+                        environment: status.environment,
+                        // description: deployment.description
+                    }
+                    activities.push(activitiyDetails);
                 }
-                activities.push(activitiyDetails);
             }
 
             const repoDetails = {
