@@ -7,7 +7,8 @@ interface Database {
     size: number;
     storageUsage: number;
     storageLimit: number;
-    // accessUsers: string[];
+    accessUsers: User[];
+    backupEnabled: boolean;
 }
 interface Group {
     clusterCount: number;
@@ -18,6 +19,21 @@ interface Group {
     diskSizeGB: number;
     replicationFactor: number;
     numShards: number;
+    backupEnabled: boolean;
+    emailAddress: string;
+    roles: Role[];
+    firstName: string;
+    lastName: string;
+}
+
+interface Role {
+    roleName: string;
+}
+
+interface User {
+    name: string;
+    emailAddress: string;
+    role: Role[];
 }
 
 interface Response {
@@ -46,9 +62,26 @@ export async function fetchMongoDBDatabases(){
                 method: "GET",
                 url: base_url + 'groups/' + project.id + '/clusters',
             })
-            // console.log(projectResponse.data)
+            
+            const userResponse = await digestAuth.request({
+                headers: { Accept: "application/json" },
+                method: "GET",
+                url: base_url + 'groups/' + project.id + '/users',
+            })
+
+            const users = userResponse.data as Response;
             const clusters = projectResponse.data as Response;
-            // console.log(clusters.results)
+            const accessUsers: User[] = [];
+            
+            for (const user of users.results) {
+                const roles = user.roles as Role[];
+                const userDetails = {
+                    name: user.firstName + ' ' + user.lastName,
+                    emailAddress: user.emailAddress,
+                    role: roles
+                }
+                accessUsers.push(userDetails);
+            }
 
             for (const cluster of clusters.results) {
                 const databaseDetails = {
@@ -57,7 +90,8 @@ export async function fetchMongoDBDatabases(){
                     size: cluster.diskSizeGB,
                     storageUsage: cluster.replicationFactor * 0.128 * cluster.numShards,
                     storageLimit: cluster.replicationFactor * cluster.diskSizeGB,
-                    // accessUsers: databaseResponse.data.access,
+                    accessUsers,
+                    backupEnabled: cluster.backupEnabled,
                 }
                 databases.push(databaseDetails);
             }    
