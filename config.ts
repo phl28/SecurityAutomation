@@ -9,8 +9,8 @@ export const config = {
     username: 'csoftware',
   },
   github: {
-    token: 'YOUR_GITHUB_ACCESS_TOKEN',
-    organization: 'YOUR_GITHUB_ORGANIZATION',
+    token: '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',
+    organization: 'CambridgeKineticsLtd',
   },
   azure: {
     clientId: 'YOUR_AZURE_CLIENT_ID',
