@@ -8,9 +8,9 @@ interface Activity {
 }
 
 interface Repo {
-    name: string;
+    repo: string;
     accessUsers: string[];
-    // activities: Activity[];
+    activities: Activity[];
 }
 
 export async function fetchGithubData() {
@@ -29,17 +29,9 @@ export async function fetchGithubData() {
             'X-GitHub-Api-Version': '2022-11-28'
         }
         })
-        // I would like to add the name field of the response.data into the repos array
         for (const rep of repoResponse.data) {
-            // const contributors: string[] = [];
-            // const contributorsResponse = await octokit.request('GET /repos/{owner}/{repo}/contributors', {
-            //     owner: organization,
-            //     repo: rep.name,
-            //     headers: {
-            //         'X-GitHub-Api-Version': '2022-11-28'
-            //     }
-            // })
             const collaborators: string[] = [];
+            const activities: Activity[] = [];
             const collaboratorResponse = await octokit.request('GET /repos/{owner}/{repo}/collaborators', {
                 owner: organization,
                 repo: rep.name,
@@ -47,19 +39,36 @@ export async function fetchGithubData() {
                   'X-GitHub-Api-Version': '2022-11-28'
                 }
               })
-            // for (const contributor of contributorsResponse.data) {
-            //     if (contributor.login) {
-            //         contributors.push(contributor.login);
-            //     }
-            // }
             for (const collaborator of collaboratorResponse.data) {
                 if (collaborator.login) {
                     collaborators.push(collaborator.login);
                 }
             }
+
+            const deploymentResponse = await octokit.request('GET /repos/{owner}/{repo}/deployments', {
+                owner: organization,
+                repo: rep.name,
+                headers: {
+                  'X-GitHub-Api-Version': '2022-11-28'
+                }
+              })
+            for (const deployment of deploymentResponse.data) {
+                let user = '';
+                if (deployment.creator) {
+                    user = deployment.creator.login;
+                }
+                const activitiyDetails = {
+                    type: 'deployment',
+                    user,
+                    timestamp: deployment.created_at
+                }
+                activities.push(activitiyDetails);
+            }
+
             const repoDetails = {
-                name: rep.name,
+                repo: rep.name,
                 accessUsers: collaborators,
+                activities
             }
             repos.push(repoDetails);
         }

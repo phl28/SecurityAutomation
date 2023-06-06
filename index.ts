@@ -14,7 +14,8 @@ async function main() {
 
     // console.log(mongoDBDatabases);
     // console.log(meteorGalaxyData);
-    console.log(githubData);
+    // console.log(githubData);
+    githubData?.forEach(repo => console.log(repo.activities));
   } catch (error) {
     console.error('An error occurred:', error);
   }
