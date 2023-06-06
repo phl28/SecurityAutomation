@@ -5,6 +5,9 @@ interface Activity {
     type: string;
     user: string;
     timestamp: string;
+    originalEnvironment: string | undefined;
+    newEnvironment: string;
+    description: string | null;
 }
 
 interface Repo {
@@ -60,7 +63,10 @@ export async function fetchGithubData() {
                 const activitiyDetails = {
                     type: 'deployment',
                     user,
-                    timestamp: deployment.created_at
+                    timestamp: deployment.created_at,
+                    originalEnvironment: deployment.original_environment,
+                    newEnvironment: deployment.environment,
+                    description: deployment.description
                 }
                 activities.push(activitiyDetails);
             }
