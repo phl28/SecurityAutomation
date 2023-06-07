@@ -1,4 +1,4 @@
-import { Octokit } from "octokit";
+import { App } from "octokit";
 import { config } from './config';
 
 interface Activity {
@@ -22,20 +22,23 @@ interface Repo {
 }
 
 export async function fetchGithubData() {
-    const { token, organization } = config.github;
+    const { organization, appId, privateKey, installationId } = config.github;
 
+    const app = new App ({
+        appId: appId,
+        privateKey: privateKey,
+    })
+
+    const octokit = await app.getInstallationOctokit(installationId);
+    
     const repos: Repo[] = [];
 
-    const octokit = new Octokit({
-        auth: token,
-    })
-    
     try {
         const repoResponse = await octokit.request('GET /orgs/{org}/repos', {
-        org: organization,
-        headers: {
-            'X-GitHub-Api-Version': '2022-11-28'
-        }
+            org: organization,
+            headers: {
+                'X-GitHub-Api-Version': '2022-11-28'
+            }
         })
         for (const rep of repoResponse.data) {
             const collaborators: string[] = [];

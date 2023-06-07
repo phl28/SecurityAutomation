@@ -1,4 +1,5 @@
 import { createObjectCsvWriter } from 'csv-writer';
+import { App } from 'octokit'
 import { config } from './config';
 import { fetchMongoDBDatabases } from './mongoData';
 import { fetchMeteorGalaxyServers } from './meteorData';
@@ -12,15 +13,16 @@ async function main() {
 
     // Fetch data from other systems and store them in respective variables
     const githubSecurityData = await fetchGithubSecurityData();
+    console.log(githubSecurityData)
     // const mongoDBDatabases = await fetchMongoDBDatabases();
     // const meteorGalaxyData = await fetchMeteorGalaxyServers();
-    // const githubData = await fetchGithubData();
+    const githubData = await fetchGithubData();
 
     // console.log('MongoDB Databases:', mongoDBDatabases);
     // // mongoDBDatabases?.forEach((database) => database.accessUsers.forEach((user) => console.log(user)))
     // console.log('MeteorGalaxy:', meteorGalaxyData);
     // // meteorGalaxyData?.apps.forEach((app) => console.log(app.activities))
-    // console.log('Github:', githubData);
+    console.log('Github:', githubData);
     // // githubData?.forEach((repo) => console.log(repo.activities))
     // const githubCSV = Papa.unparse(githubData);
     // fs.writeFileSync('githubData.csv', githubCSV);
