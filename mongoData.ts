@@ -3,9 +3,10 @@ import AxiosDigestAuth from '@mhoc/axios-digest-auth';
 
 interface Database {
   name: string;
-  size: number;
-  storageUsage: number;
-  storageLimit: number;
+  size: string;
+  storageCapacity: number;
+  // need to check again if storageUsage is actually available
+  // storageUsage: number;
   accessUsers: User[];
   backupEnabled: boolean;
   ipAccess: string[];
@@ -25,6 +26,7 @@ interface Group {
   firstName: string;
   lastName: string;
   ipAddress: string;
+  providerSettings: { instanceSizeName: string };
 }
 
 interface Role {
@@ -83,7 +85,11 @@ export async function fetchMongoDBDatabases() {
       const ipAccess: string[] = [];
 
       for (const access of accesses.results) {
-        ipAccess.push(access.ipAddress);
+        if (access.ipAddress) {
+          ipAccess.push(access.ipAddress);
+        } else {
+          ipAccess.push('Open Access');
+        }
       }
 
       for (const user of users.results) {
@@ -100,9 +106,8 @@ export async function fetchMongoDBDatabases() {
         const databaseDetails = {
           name: project.name,
           clusterName: cluster.name,
-          size: cluster.diskSizeGB,
-          storageUsage: cluster.replicationFactor * 0.128 * cluster.numShards,
-          storageLimit: cluster.replicationFactor * cluster.diskSizeGB,
+          size: cluster.providerSettings.instanceSizeName,
+          storageCapacity: cluster.diskSizeGB,
           accessUsers,
           backupEnabled: cluster.backupEnabled,
           ipAccess,
