@@ -42,7 +42,7 @@ export const config = {
 https://www.mongodb.com/docs/atlas/configure-api-access/
 
 ### Meteor Galaxy
-[https://{{region}}.galaxy.meteor.com/{{org}} ](url)  
+[https://{{region}}.galaxy.meteor.com/{{org}}/settings ](url)  
 Substitude region with `us-east-1` or `eu-west-1` or `ap-southeast-2` depending on the region the apps are deployed in
 
 ### Github
