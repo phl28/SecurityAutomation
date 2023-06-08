@@ -1,6 +1,3 @@
-import { createObjectCsvWriter } from 'csv-writer';
-import { App } from 'octokit'
-import { config } from './config';
 import { fetchMongoDBDatabases } from './mongoData';
 import { fetchMeteorGalaxyServers } from './meteorData';
 import { fetchGithubData } from './githubData';
@@ -10,10 +7,9 @@ import fs from 'fs';
 
 async function main() {
   try {
-
     // Fetch data from other systems and store them in respective variables
     const githubSecurityData = await fetchGithubSecurityData();
-    console.log(githubSecurityData)
+    console.log(githubSecurityData);
     const mongoDBDatabases = await fetchMongoDBDatabases();
     const meteorGalaxyData = await fetchMeteorGalaxyServers();
     const githubData = await fetchGithubData();
@@ -35,4 +31,4 @@ async function main() {
   }
 }
 
-main()
+main();
