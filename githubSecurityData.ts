@@ -31,10 +31,14 @@ export async function fetchGithubSecurityData() {
         })
         const alerts: SecurityAdvisory[] = [];
         for (const alert of alertResponse.data) {
-            const vulnerabilityDetails = {
-                severity: alert.security_advisory.vulnerabilities[0].severity,
-                vulnerableVersionRange: alert.security_advisory.vulnerabilities[0].vulnerable_version_range,
-            }
+            // const vulnerabilities: vulnerability[] = [];
+            // for (const vulnerability of alert.security_advisory.vulnerabilities) {
+                const vulnerabilityDetails = {
+                    severity: alert.security_advisory.vulnerabilities[0].severity,
+                    vulnerableVersionRange: alert.security_advisory.vulnerabilities[0].vulnerable_version_range,
+                }
+
+
             const alertDetails = {
                 summary: alert.security_advisory.summary,
                 severity: alert.security_advisory.severity,

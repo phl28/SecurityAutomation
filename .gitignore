@@ -1,0 +1,7 @@
+node_modules
+.DS_Store
+.vs
+*.pem
+config.ts
+*.csv
+*.txt
